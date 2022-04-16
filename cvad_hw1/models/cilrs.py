@@ -22,15 +22,16 @@ class CILRS(nn.Module):
         
 
         # speed
-        self.speed_head = nn.Sequential(nn.Linear(512, 256), nn.ReLU(), nn.Linear(256, 1))
+        self.speed_head = nn.Sequential(nn.Linear(512, 256), nn.ReLU(), nn.Dropout(0.3), nn.Linear(256, 128),
+                                         nn.ReLU(), nn.Linear(128, 1))
         
         # measurement fc (speed -> 512)
-        self.measure_fc = nn.Sequential(nn.Linear(1, 64), nn.ReLU(), nn.Linear(64, 128))
+        self.measure_fc = nn.Sequential(nn.Linear(1, 64), nn.ReLU(), nn.Linear(64, 128), nn.ReLU(), nn.Linear(128, 256))
         
         # measurement fc (speed -> 512)
-        self.post_fc = nn.Sequential(nn.Linear(512+128, 512), nn.ReLU(), nn.Linear(512, 512))
+        self.post_fc = nn.Sequential(nn.Linear(512+256, 512), nn.ReLU(), nn.Linear(512, 512))
         
-        self.command_fc = nn.ModuleList([ nn.Sequential(nn.Linear(512, 256), nn.ReLU(), nn.Linear(256, 3), nn.Tanh()) 
+        self.command_fc = nn.ModuleList([nn.Sequential(nn.Linear(512, 256), nn.ReLU(), nn.Linear(256, 128), nn.ReLU(), nn.Linear(128, 3)) 
                                 for i in range(n_commands)])
 
     def forward(self, imgs, measures, commands):
@@ -50,6 +51,13 @@ class CILRS(nn.Module):
             if len(idxs) > 0:
                 ret[idxs, 1:] = self.command_fc[c](out[idxs])
         
+        # throttle
+        ret[:, 1:2] = nn.Sigmoid()(ret[:, 1:2])
+        #brake
+        ret[:, 2:3] = nn.Sigmoid()(ret[:, 2:3])
+        # steer
+        ret[:, 3:4] = nn.Tanh()(ret[:, 3:4])
+
         return ret
             
 

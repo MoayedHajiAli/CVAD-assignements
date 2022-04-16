@@ -32,10 +32,10 @@ class RewardManager():
             reward_dict['speeding'] = 1 - np.abs(action['throttle'] - diff/100) 
 
         # stear (angle should be aligned with waypoint)
-        reward['way_steer'] = -np.abs(state['waypoint_angle'] - action['steer'])
+        reward_dict['way_steer'] = -np.abs(state['waypoint_angle'] - action['steer'])
 
         # add reward for suriving one more step
-        reward['step'] = 0.5
+        # reward_dict['step'] = 0.5
 
         # Your code here
         reward = 0.0

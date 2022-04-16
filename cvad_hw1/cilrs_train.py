@@ -8,9 +8,10 @@ import matplotlib.pyplot as plt
 from tqdm import tqdm 
 import numpy as np
 import argparse
+import os
 
 
-def validate(model, dataloader, lmbd=0.05, device='cpu'):
+def validate(model, dataloader, lmbd=0.2, device='cpu'):
     """Validate model performance on the validation dataset"""
     # Your code here
     model.eval()
@@ -76,16 +77,16 @@ def main():
         model = CILRS()
     else:
         print("Loading model from cilrs_model.ckpt")
-        model = torch.load('cilrs_model.ckpt')
+        model = torch.load(args.resume)
     train_dataset = ExpertDataset(train_root)
     val_dataset = ExpertDataset(val_root)
 
     # You can change these hyper parameters freely, and you can add more
-    num_epochs = 25
+    num_epochs = 40
     batch_size = 256
     lr = 0.0002
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    save_path = "cilrs_model.ckpt"
+    save_dir = "checkpoints/cilrs/"
 
     train_loader = DataLoader(train_dataset, batch_size=batch_size, num_workers=10, shuffle=True,
                             drop_last=True)
@@ -109,7 +110,8 @@ def main():
         
         print("Val loss:", s_loss, ac_loss)
 
-    torch.save(model, save_path)
+
+    torch.save(model, os.path.join(save_dir, f'cilrs_{i}.ckpt'))
     plot_losses(ac_train_losses, s_train_losses, ac_val_losses, s_val_losses)
 
 
