@@ -8,6 +8,7 @@ import torch
 from tqdm import tqdm
 from PIL import Image
 from torchvision import transforms
+import numpy as np
 
 class Evaluator():
     def __init__(self, env, config):
@@ -34,9 +35,8 @@ class Evaluator():
         rgb = self.img_preprocess(Image.fromarray(rgb)).unsqueeze(0).to(self.device)
         command = torch.Tensor([command]).unsqueeze(0).to(self.device)
         speed = torch.Tensor([speed]).unsqueeze(0).to(self.device)
-        print(rgb.shape)
         actions = self.agent(rgb, command, speed)
-        return action[0, 1:].cpu().detch().numpy()
+        return torch.clip(actions[0, 1:].cpu().detach().float(), -1. , 1.).numpy().astype(np.float32)
 
     def take_step(self, state):
         rgb = state["rgb"]
@@ -44,17 +44,16 @@ class Evaluator():
         speed = state["speed"]
         throttle, steer, brake = self.generate_action(rgb, speed, command)
         action = {
-            "throttle": throttle,
-            "brake": brake,
-            "steer": steer
+            "throttle": float(throttle),
+            "brake": float(brake),
+            "steer": float(steer)
         }
-        print(action)
         state, reward_dict, is_terminal = self.env.step(action)
         return state, is_terminal
 
     def evaluate(self, num_trials=100):
         terminal_histogram = {}
-        for i in range(num_trials):
+        for i in tqdm(range(num_trials)):
             state, _, is_terminal = self.env.reset()
             for i in tqdm(range(5000)):
                 if is_terminal:
@@ -62,6 +61,8 @@ class Evaluator():
                 state, is_terminal = self.take_step(state)
             if not is_terminal:
                 is_terminal = ["timeout"]
+                
+            print(is_terminal)
             terminal_histogram[is_terminal[0]] = (terminal_histogram.get(is_terminal[0], 0)+1)
         print("Evaluation over. Listing termination causes:")
         for key, val in terminal_histogram.items():

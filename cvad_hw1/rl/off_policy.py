@@ -216,7 +216,7 @@ class BaseOffPolicy(ABC):
             self.p_optim.zero_grad()
 
             # Calculating q_loss and adding to iter loss
-            q_val_estimates, q_loss = self._compute_q_loss(data)
+            q_loss = self._compute_q_loss([self.policy] + self.q_nets, data)
             iter_loss += q_loss
             # Logging
             mean_q_loss += q_loss.item() / num_batches
@@ -229,7 +229,7 @@ class BaseOffPolicy(ABC):
                     param.requires_grad = False
 
                 # Calculating p_loss and adding to iter loss
-                p_loss = self._compute_p_loss(data)
+                p_loss = self._compute_p_loss([self.policy] + self.q_nets, data)
                 iter_loss += p_loss
                 # Logging
                 mean_p_loss += p_loss.mean().item() / num_batches
@@ -349,11 +349,11 @@ class BaseOffPolicy(ABC):
         pass
 
     @abstractmethod
-    def _compute_q_loss(self, data):
+    def _compute_q_loss(self, model, data):
         """Compute q_val estimates and loss for given batch of data."""
         pass
 
     @abstractmethod
-    def _compute_p_loss(self, data):
+    def _compute_p_loss(self, model, data):
         """Compute policy loss for given batch of data."""
         pass

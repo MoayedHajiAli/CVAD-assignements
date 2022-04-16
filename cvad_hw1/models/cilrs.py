@@ -18,7 +18,7 @@ class CILRS(nn.Module):
         self.backbone.append(nn.Conv2d(512, 512, kernel_size=3, padding=1))
         self.backbone.append(nn.ReLU())
         self.backbone.append(nn.AvgPool2d(kernel_size=7,  stride=1,  padding=0))
-        self.backbone.append(nn.Dropout(0.2))
+        self.backbone.append(nn.Dropout(0.5))
         
 
         # speed
@@ -30,7 +30,7 @@ class CILRS(nn.Module):
         # measurement fc (speed -> 512)
         self.post_fc = nn.Sequential(nn.Linear(512+128, 512), nn.ReLU(), nn.Linear(512, 512))
         
-        self.command_fc = nn.ModuleList([ nn.Sequential(nn.Linear(512, 256), nn.ReLU(), nn.Linear(256, 3)) 
+        self.command_fc = nn.ModuleList([ nn.Sequential(nn.Linear(512, 256), nn.ReLU(), nn.Linear(256, 3), nn.Tanh()) 
                                 for i in range(n_commands)])
 
     def forward(self, imgs, measures, commands):

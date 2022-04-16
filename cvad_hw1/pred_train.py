@@ -6,6 +6,7 @@ from torch import optim
 import torch.nn.functional as F
 import matplotlib.pyplot as plt
 from tqdm import tqdm 
+import numpy as np
 
 
 def validate(model, dataloader, device='cpu'):
@@ -55,7 +56,7 @@ def plot_losses(ce_train_losses, mse_train_losses, ce_val_losses, mse_val_losses
     ax.set_title('Affordances prediction loss graph')
     ax.set_xlabel('epoch')
     ax.set_ylabel('bce + mse loss')
-    ax.set_ylim(top=10.)
+    ax.set_ylim(top=1000.)
     fig.legend()
     fig.savefig('affordances_fig.png')
 
@@ -68,8 +69,8 @@ def main():
     val_dataset = ExpertDataset(val_root)
 
     # You can change these hyper parameters freely, and you can add more
-    num_epochs = 20
-    batch_size = 64
+    num_epochs = 5
+    batch_size = 256
     lr = 0.0002
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     save_path = "pred_model.ckpt"
@@ -92,6 +93,8 @@ def main():
         ce, mse = validate(model, val_loader, device=device)
         ce_val_losses.append(ce)
         mse_val_losses.append(mse)
+
+        print(ce_train_losses[-1], mse_train_losses[-1], ce_val_losses[-1], mse_val_losses[-1])
         
     torch.save(model, save_path)
     plot_losses(ce_train_losses, mse_train_losses, ce_val_losses, mse_val_losses)
