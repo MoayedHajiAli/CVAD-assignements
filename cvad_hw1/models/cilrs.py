@@ -12,26 +12,19 @@ class CILRS(nn.Module):
         self.backbone = models.resnet18(pretrained=True)
         
         # discard the last two layers
-        self.backbone = nn.Sequential(*(list(self.backbone.children())[:-2]))
-        
-        # add one addtional conv and global average pool
-        self.backbone.append(nn.Conv2d(512, 512, kernel_size=3, padding=1))
-        self.backbone.append(nn.ReLU())
-        self.backbone.append(nn.AvgPool2d(kernel_size=7,  stride=1,  padding=0))
+        self.backbone = nn.Sequential(*(list(self.backbone.children())[:-1]))
         self.backbone.append(nn.Dropout(0.5))
         
-
         # speed
-        self.speed_head = nn.Sequential(nn.Linear(512, 256), nn.ReLU(), nn.Dropout(0.3), nn.Linear(256, 128),
-                                         nn.ReLU(), nn.Linear(128, 1))
+        self.speed_head = nn.Sequential(nn.Linear(512, 256), nn.ReLU(), nn.Dropout(0.3), nn.Linear(256, 256), nn.ReLU(), nn.Dropout(0.3), nn.Linear(256, 1))
         
         # measurement fc (speed -> 512)
-        self.measure_fc = nn.Sequential(nn.Linear(1, 64), nn.ReLU(), nn.Linear(64, 128), nn.ReLU(), nn.Linear(128, 256))
+        self.measure_fc = nn.Sequential(nn.Linear(1, 128), nn.ReLU(), nn.Linear(128, 128), nn.ReLU(), nn.Linear(128, 128), nn.ReLU())
         
         # measurement fc (speed -> 512)
-        self.post_fc = nn.Sequential(nn.Linear(512+256, 512), nn.ReLU(), nn.Linear(512, 512))
+        self.post_fc = nn.Sequential(nn.Linear(512+128, 512), nn.ReLU())
         
-        self.command_fc = nn.ModuleList([nn.Sequential(nn.Linear(512, 256), nn.ReLU(), nn.Linear(256, 128), nn.ReLU(), nn.Linear(128, 3)) 
+        self.command_fc = nn.ModuleList([nn.Sequential(nn.Linear(512, 256), nn.ReLU(), nn.Linear(256, 256), nn.ReLU(), nn.Linear(256, 3)) 
                                 for i in range(n_commands)])
 
     def forward(self, imgs, measures, commands):

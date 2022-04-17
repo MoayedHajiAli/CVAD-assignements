@@ -9,38 +9,67 @@ from tqdm import tqdm
 import numpy as np
 import argparse
 import os
+import wandb
 
+global_step = 0
 
 def validate(model, dataloader, lmbd=0.2, device='cpu'):
     """Validate model performance on the validation dataset"""
     # Your code here
+    global global_step
+
     model.eval()
     s_total_loss, ac_total_loss = 0, 0
     for batch in tqdm(dataloader):
         pred = model(batch['image'].to(device), batch['measure'].to(device), batch['command'].to(device))
-        ac_loss = F.mse_loss(pred[:, 1:], batch['action'].to(device))
-        s_loss = F.mse_loss(pred[:, 0:1], batch['measure'].to(device))
-        s_total_loss += lmbd * s_loss.item()
+        s_loss = F.l1_loss(pred[:, 0:1], batch['measure'].to(device))
+        throttle_loss = F.l1_loss(pred[:, 1:2], batch['action'][:, 0:1].to(device))
+        brake_loss = F.l1_loss(pred[:, 2:3], batch['action'][:, 1:2].to(device))
+        steer_loss = F.l1_loss(pred[:, 3:4], batch['action'][:, 2:3].to(device))
+        ac_loss = throttle_loss + brake_loss + steer_loss
+        loss = (1 - lmbd) * ac_loss + lmbd * s_loss
+        s_total_loss += s_loss.item()
         ac_total_loss += ac_loss.item()
+
+        wandb.log({'val/throttle_loss': throttle_loss.mean().item(),
+                   'val/brake_loss': brake_loss.mean().item(),
+                   'val/steer_loss': steer_loss.mean().item(),
+                   'val/action_loss': ac_loss.mean().item(),
+                   'val/speed_loss': s_loss.mean().item(),
+                   'val/total_loss': loss.mean().item(),
+                   'global_step': global_step})
     
     return s_total_loss / len(batch), ac_total_loss / len(batch)
 
-def train(model, dataloader, optimizer, lmbd = 0.05, device='cpu'):
+def train(model, dataloader, optimizer, lmbd = 0.2, device='cpu'):
     """Train model on the training dataset for one epoch"""
     # Your code here
+    global global_step
     model.train()
     s_total_loss, ac_total_loss = 0, 0
     for batch in tqdm(dataloader):
         pred = model(batch['image'].to(device), batch['measure'].to(device), batch['command'].to(device))
-        ac_loss = F.mse_loss(pred[:, 1:], batch['action'].to(device))
-        s_loss = F.mse_loss(pred[:, 0:1], batch['measure'].to(device))
+        s_loss = F.l1_loss(pred[:, 0:1], batch['measure'].to(device))
+        throttle_loss = F.l1_loss(pred[:, 1:2], batch['action'][:, 0:1].to(device))
+        brake_loss = F.l1_loss(pred[:, 2:3], batch['action'][:, 1:2].to(device))
+        steer_loss = F.l1_loss(pred[:, 3:4], batch['action'][:, 2:3].to(device))
+        ac_loss = throttle_loss + brake_loss + steer_loss
         loss = (1 - lmbd) * ac_loss + lmbd * s_loss
         optimizer.zero_grad()
         loss.backward()
         optimizer.step()
-        s_total_loss += lmbd * s_loss.item()
+        s_total_loss += s_loss.item()
         ac_total_loss += ac_loss.item()
-    
+
+        wandb.log({'train/throttle_loss': throttle_loss.mean().item(),
+                   'train/brake_loss': brake_loss.mean().item(),
+                   'train/steer_loss': steer_loss.mean().item(),
+                   'train/action_loss': ac_loss.mean().item(),
+                   'train/speed_loss': s_loss.mean().item(),
+                   'train/total_loss': loss.mean().item(),
+                   'global_step': global_step})
+        
+        global_step += 1
     return s_total_loss / len(batch), ac_total_loss / len(batch)
 
 
@@ -68,7 +97,11 @@ def plot_losses(ac_train_losses, s_train_losses, ac_val_losses, s_val_losses):
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--resume', type=str, default="F")
+    parser.add_argument('--name', type=str, default='cilrs_run')
     args =  parser.parse_args()
+
+
+    wandb.init(project='cvad-hw1', name=args.name)
 
     # Change these paths to the correct paths in your downloaded expert dataset
     train_root = '/userfiles/eozsuer16/expert_data/train'
@@ -83,7 +116,7 @@ def main():
 
     # You can change these hyper parameters freely, and you can add more
     num_epochs = 40
-    batch_size = 256
+    batch_size = 512
     lr = 0.0002
     device = 'cuda' if torch.cuda.is_available() else 'cpu'
     save_dir = "checkpoints/cilrs/"
@@ -93,7 +126,7 @@ def main():
     val_loader = DataLoader(val_dataset, batch_size=batch_size, num_workers=10, shuffle=False)
 
 
-    optimizer = optim.Adam(model.parameters(), lr=lr)
+    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=0.0005)
     ac_train_losses, s_train_losses = [], []
     ac_val_losses, s_val_losses = [], []
 
@@ -111,7 +144,8 @@ def main():
         print("Val loss:", s_loss, ac_loss)
 
 
-    torch.save(model, os.path.join(save_dir, f'cilrs_{i}.ckpt'))
+        torch.save(model, os.path.join(save_dir, f'cilrs_{i}.ckpt'))
+
     plot_losses(ac_train_losses, s_train_losses, ac_val_losses, s_val_losses)
 
 

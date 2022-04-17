@@ -38,9 +38,9 @@ class ExpertDataset(Dataset):
                                    torch.Tensor([measurements['steer']])])
         
         ret['affordances'] = torch.cat([torch.Tensor([measurements['tl_state']]),
+                                        torch.Tensor([max(0., measurements['tl_dist'] / 45.)]),
                                         torch.Tensor([measurements['lane_dist']]), 
-                                        torch.Tensor([measurements['route_angle']]),
-                                        torch.Tensor([measurements['tl_dist']])]) 
+                                        torch.Tensor([measurements['route_angle']])]) 
         
         
         # load img

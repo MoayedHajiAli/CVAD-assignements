@@ -27,7 +27,7 @@ class Evaluator():
         
 
     def load_agent(self,):
-        model = torch.load('checkpoints/cilrs/cilrs_39.ckpt')
+        model = torch.load('checkpoints/cilrs/cilrs_35.ckpt')
         return model.to(self.device).eval()
         
     def generate_action(self, rgb, command, speed):
@@ -42,10 +42,9 @@ class Evaluator():
         rgb = state["rgb"]
         command = state["command"]
         speed = state["speed"]
-        throttle, steer, brake = self.generate_action(rgb, speed, command)
+        throttle, brake, steer = self.generate_action(rgb, speed, command)
 
-        if brake < 0.05:
-            brake = 0.
+        brake = int(brake * 10)/ 10
         
         print(throttle, steer, brake)
         action = {
