@@ -27,7 +27,7 @@ class Evaluator():
         
 
     def load_agent(self,):
-        model = torch.load('checkpoints/cilrs/cilrs_35.ckpt')
+        model = torch.load('checkpoints/best/cilrs_l2.ckpt')
         return model.to(self.device).eval()
         
     def generate_action(self, rgb, command, speed):
@@ -44,9 +44,10 @@ class Evaluator():
         speed = state["speed"]
         throttle, brake, steer = self.generate_action(rgb, speed, command)
 
-        brake = int(brake * 10)/ 10
+        if brake < 0.02:
+            brake = 0.
         
-        print(throttle, steer, brake)
+        # print(command, throttle, steer, brake)
         action = {
             "throttle": float(throttle),
             "brake": float(brake),
@@ -68,6 +69,10 @@ class Evaluator():
                 
             print(is_terminal)
             terminal_histogram[is_terminal[0]] = (terminal_histogram.get(is_terminal[0], 0)+1)
+
+            for key, val in terminal_histogram.items():
+                print(f"{key}: {val}/100")
+
         print("Evaluation over. Listing termination causes:")
         for key, val in terminal_histogram.items():
             print(f"{key}: {val}/100")

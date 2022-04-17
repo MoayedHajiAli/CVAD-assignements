@@ -29,7 +29,7 @@ class TD3(BaseOffPolicy):
         q2_pred = q2(st1, ac)
 
         with torch.no_grad():
-            ac_pred = policy(st1)
+            ac_pred = policy(st1, cmd.unsqueeze(-1))
             ac_pred += torch.clamp(torch.randn_like(ac_pred) * 0.1, -0.5, 0.5)
             ac_pred = torch.clamp(ac_pred, -1, 1)
 
@@ -49,7 +49,7 @@ class TD3(BaseOffPolicy):
         st1, cmd, ac, rew, st2, cmd2, ter = st1.cuda(), cmd.cuda(), ac.cuda(),\
                                      rew.cuda(), st2.cuda(), cmd2.cuda(), ter.cuda()
         policy, q1, q2 = models 
-        ac_pred = policy(st1)
+        ac_pred = policy(st1, cmd.unsqueeze(-1))
         re_pred = q1(st1, ac_pred)
         return -re_pred.mean()
 
@@ -85,9 +85,10 @@ class TD3(BaseOffPolicy):
         """Take one step and put data into the replay buffer."""
         features = self._extract_features(state)
         if self.step >= self.config["exploration_steps"]:
-            action = self.policy(features, [state["command"]])
+            action = self.policy(features.cuda().unsqueeze(0), torch.Tensor([state["command"]]).unsqueeze(0).cuda())
             action = generate_noisy_action_tensor(
                 action, self.config["action_space"], self.config["policy_noise"], 1.0)
+            print(action)
         else:
             action = self._explorer.generate_action(state)
         if self.step <= self.config["augment_steps"]:

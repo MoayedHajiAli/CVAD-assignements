@@ -9,7 +9,7 @@ episode_max_steps : 5000
 # Batch size sampled from replay buffer
 batch_size : 1024 # 1000
 # Reward discount
-discount : 0.95
+discount : 0.95-
 # How many steps should pass before first update
 no_update_steps : 20000 # TODO: inital number was 20000
 # How many initial steps should be exploration

@@ -153,8 +153,8 @@ class BaseOffPolicy(ABC):
 
             while not is_terminal and ep_step < self.config["episode_max_steps"]:
                 # Generate action
-                features = self._extract_features(state)
-                action = self.policy(features, [state["command"]])
+                features = self._extract_features(state).cuda()
+                action = self.policy(features, torch.Tensor([state["command"]]).cuda())
 
                 # Take step
                 new_state, reward_dict, is_terminal = self._take_step(state, action)
