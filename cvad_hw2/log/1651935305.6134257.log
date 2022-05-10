@@ -1,0 +1,48 @@
+2022-05-07 17:55:05,633 - root - INFO - Namespace(batch_size=128, epoch=5, ex_file_path='/userfiles/eozsuer16/argo/ex_list', feature_dim=64, learning_rate=0.002, load_epoch=None, lr_decay_schedule=0, model_save_path='./', num_workers=0, pretrain_path=None, training_name=None, val_ex_file_path='/userfiles/eozsuer16/argo/eval.ex_list', validation_epoch=1, weight_decay=0.0, world_size=1)
+2022-05-07 17:55:05,724 - torch.distributed.distributed_c10d - INFO - Added key: store_based_barrier_key:1 to store for rank: 0
+2022-05-07 17:55:05,726 - torch.distributed.distributed_c10d - INFO - Rank 0: Completed store-based barrier for key:store_based_barrier_key:1 with 1 nodes.
+2022-05-07 17:55:29,142 - root - INFO - === Epoch 0/5 ===
+2022-05-07 17:55:29,143 - root - INFO - learning_rate: 0.002
+2022-05-07 17:55:32,092 - root - INFO - {'minADE': 14.779630953814818, 'minFDE': 27.994072014568445, 'MR': 0.9921875}
+2022-05-07 17:55:32,096 - root - INFO -  ADE: 14.883912143109411
+2022-05-07 17:55:32,097 - root - INFO -  DE@1: 9.86888650747177
+2022-05-07 17:55:32,097 - root - INFO -  DE@2: 19.679002388944863
+2022-05-07 17:55:32,098 - root - INFO -  DE@3: 28.884805200348776
+2022-05-07 17:55:32,101 - root - INFO - === === === 
+
+2022-05-07 17:55:32,103 - root - INFO - === Epoch 1/5 ===
+2022-05-07 17:55:32,104 - root - INFO - learning_rate: 0.002
+2022-05-07 17:55:33,644 - root - INFO - {'minADE': 14.686228278269656, 'minFDE': 28.147841387573884, 'MR': 0.9921875}
+2022-05-07 17:55:33,647 - root - INFO -  ADE: 14.891062578961192
+2022-05-07 17:55:33,647 - root - INFO -  DE@1: 9.689902556467281
+2022-05-07 17:55:33,648 - root - INFO -  DE@2: 19.566948071515178
+2022-05-07 17:55:33,649 - root - INFO -  DE@3: 29.03965523449429
+2022-05-07 17:55:33,651 - root - INFO - === === === 
+
+2022-05-07 17:55:33,652 - root - INFO - === Epoch 2/5 ===
+2022-05-07 17:55:33,653 - root - INFO - learning_rate: 0.002
+2022-05-07 17:55:34,886 - root - INFO - {'minADE': 14.552560809610693, 'minFDE': 28.07225088134716, 'MR': 0.9921875}
+2022-05-07 17:55:34,888 - root - INFO -  ADE: 14.867809391724114
+2022-05-07 17:55:34,889 - root - INFO -  DE@1: 9.581322519813149
+2022-05-07 17:55:34,889 - root - INFO -  DE@2: 19.6345578723836
+2022-05-07 17:55:34,890 - root - INFO -  DE@3: 29.178605426172712
+2022-05-07 17:55:34,892 - root - INFO - === === === 
+
+2022-05-07 17:55:34,893 - root - INFO - === Epoch 3/5 ===
+2022-05-07 17:55:34,894 - root - INFO - learning_rate: 0.002
+2022-05-07 17:55:36,045 - root - INFO - {'minADE': 14.458819730130768, 'minFDE': 27.938616949036714, 'MR': 0.9921875}
+2022-05-07 17:55:36,047 - root - INFO -  ADE: 14.85786149510278
+2022-05-07 17:55:36,047 - root - INFO -  DE@1: 9.530881169806925
+2022-05-07 17:55:36,048 - root - INFO -  DE@2: 19.606457668432018
+2022-05-07 17:55:36,049 - root - INFO -  DE@3: 29.230869611487922
+2022-05-07 17:55:36,051 - root - INFO - === === === 
+
+2022-05-07 17:55:36,052 - root - INFO - === Epoch 4/5 ===
+2022-05-07 17:55:36,052 - root - INFO - learning_rate: 0.002
+2022-05-07 17:55:37,176 - root - INFO - {'minADE': 14.36740843291883, 'minFDE': 27.802476597982263, 'MR': 0.9921875}
+2022-05-07 17:55:37,178 - root - INFO -  ADE: 14.85229718212656
+2022-05-07 17:55:37,179 - root - INFO -  DE@1: 9.477521187958624
+2022-05-07 17:55:37,179 - root - INFO -  DE@2: 19.551474262147362
+2022-05-07 17:55:37,180 - root - INFO -  DE@3: 29.25162617909157
+2022-05-07 17:55:37,182 - root - INFO - === === === 
+

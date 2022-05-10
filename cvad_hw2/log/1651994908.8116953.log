@@ -1,0 +1,25 @@
+2022-05-08 10:28:28,814 - root - INFO - Namespace(batch_size=128, epoch=5, ex_file_path='/userfiles/eozsuer16/argo/ex_list', feature_dim=64, learning_rate=0.002, load_epoch=None, lr_decay_schedule=0, model_save_path='./', num_workers=0, pretrain_path=None, training_name=None, val_ex_file_path='/userfiles/eozsuer16/argo/eval.ex_list', validation_epoch=1, weight_decay=0.0, world_size=1)
+2022-05-08 10:28:28,883 - torch.distributed.distributed_c10d - INFO - Added key: store_based_barrier_key:1 to store for rank: 0
+2022-05-08 10:28:28,884 - torch.distributed.distributed_c10d - INFO - Rank 0: Completed store-based barrier for key:store_based_barrier_key:1 with 1 nodes.
+2022-05-08 10:28:40,572 - root - INFO - === Epoch 0/5 ===
+2022-05-08 10:28:40,573 - root - INFO - learning_rate: 0.002
+2022-05-08 11:19:27,500 - root - INFO - Epoch train loss = 3.15887
+2022-05-08 11:22:55,112 - root - INFO - {'minADE': 2.5360800533307404, 'minFDE': 4.645715323224062, 'MR': 0.7967926631536278}
+2022-05-08 11:22:55,392 - root - INFO -  ADE: 11.041108321591315
+2022-05-08 11:22:55,393 - root - INFO -  DE@1: 6.9919333129278165
+2022-05-08 11:22:55,394 - root - INFO -  DE@2: 14.250534827871068
+2022-05-08 11:22:55,395 - root - INFO -  DE@3: 21.89136258536892
+2022-05-08 11:22:55,426 - root - INFO - === === === 
+
+2022-05-08 11:22:55,427 - root - INFO - === Epoch 1/5 ===
+2022-05-08 11:22:55,428 - root - INFO - learning_rate: 0.002
+2022-05-08 12:16:08,989 - root - INFO - Epoch train loss = 2.91639
+2022-05-08 12:19:36,557 - root - INFO - {'minADE': 2.217632779264816, 'minFDE': 3.8315699727427006, 'MR': 0.7294791244426428}
+2022-05-08 12:19:36,837 - root - INFO -  ADE: 6.873898610325109
+2022-05-08 12:19:36,838 - root - INFO -  DE@1: 4.3191725646653065
+2022-05-08 12:19:36,838 - root - INFO -  DE@2: 8.751788466323347
+2022-05-08 12:19:36,839 - root - INFO -  DE@3: 13.626064362946696
+2022-05-08 12:19:36,869 - root - INFO - === === === 
+
+2022-05-08 12:19:36,870 - root - INFO - === Epoch 2/5 ===
+2022-05-08 12:19:36,871 - root - INFO - learning_rate: 0.002
